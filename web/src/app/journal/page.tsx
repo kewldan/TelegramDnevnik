@@ -189,10 +189,10 @@ export default function Home() {
         <main className="px-2">
             <Tabs defaultValue="1" className="w-full">
                 <TabsList className="w-full">
-                    <TabsTrigger value="1">1 четверть</TabsTrigger>
-                    <TabsTrigger value="2">2 четверть</TabsTrigger>
-                    <TabsTrigger value="3">3 четверть</TabsTrigger>
-                    <TabsTrigger value="4">4 четверть</TabsTrigger>
+                    <TabsTrigger value="1">1 чет.</TabsTrigger>
+                    <TabsTrigger value="2">2 чет.</TabsTrigger>
+                    <TabsTrigger value="3">3 чет.</TabsTrigger>
+                    <TabsTrigger value="4">4 чет.</TabsTrigger>
                     <TabsTrigger value="year">Год</TabsTrigger>
                 </TabsList>
             </Tabs>
