@@ -3,3 +3,5 @@ aiogram~=3.12.0
 fastapi~=0.112.2
 uvicorn~=0.30.6
 uvloop~=0.20.0; sys_platform == 'linux' or sys_platform == 'darwin'
+aiohttp~=3.10.5
+beanie~=1.26.0

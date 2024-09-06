@@ -5,7 +5,7 @@ import GreetingAnimation from '#/animations/_DUCK16_HEY_OUT.json';
 import CoolAnimation from '#/animations/_DUCK5_DEAL_OUT.json';
 import PrivacyAnimation from '#/animations/_005_PRIVATE_OUT.json';
 import LoginAnimation from '#/animations/_DUCK23_HEARTS_OUT.json';
-import React, {ReactNode, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import SpbLogo from "@/components/spb-logo";
 import {
@@ -17,6 +17,9 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer";
 import LoginForm from "@/components/login-form";
+import {useRouter} from "next/navigation";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store";
 
 type Slide = {
     animation: Record<string, unknown>;
@@ -83,6 +86,15 @@ const slides: Slide[] = [
 
 export default function GreetingPage() {
     const [slide, setSlide] = useState<number>(0);
+    const router = useRouter();
+
+    const token = useSelector((state: RootState) => state.auth.token);
+
+    useEffect(() => {
+        if (token) {
+            router.replace('/journal');
+        }
+    }, [router, token]);
 
     const currentSlide = slides[slide % slides.length];
 

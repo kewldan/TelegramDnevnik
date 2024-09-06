@@ -4,7 +4,7 @@ import aiohttp
 
 
 class DnevnikClient:
-    def __init__(self, token: str | None = None, endpoint: str = 'https://dnevnik2.petersburgedu.ru/api'):
+    def __init__(self, token: str | None = None, endpoint: str = 'https://dnevnik2.petersburgedu.ru'):
         self._endpoint = endpoint
         self._token = token
 
@@ -37,7 +37,7 @@ class DnevnikClient:
                 return response['data']
 
     async def auth(self, email: str, password: str) -> None:
-        data = await self._send_request('POST', '/user/auth/login', json={
+        data = await self._send_request('POST', '/api/user/auth/login', json={
             "type": "email",
             "login": email,
             "activation_code": None,
@@ -47,14 +47,14 @@ class DnevnikClient:
         self._token = data['token']
 
     async def get_children(self):
-        data = await self._send_request('GET', '/journal/person/related-child-list', params={
+        data = await self._send_request('GET', '/api/journal/person/related-child-list', params={
             'p_page': '1'
         })
 
         return data['items']
 
     async def get_periods(self, group_id: int):
-        data = await self._send_request('GET', '/group/group/get-list-period', params={
+        data = await self._send_request('GET', '/api/group/group/get-list-period', params={
             "p_limit": "500",
             "p_page": "1",
             "p_group_ids[]": str(group_id)
@@ -63,10 +63,17 @@ class DnevnikClient:
         return data
 
     async def get_acs(self, education_id: int):
-        data = await self._send_request('GET', '/journal/acs/list', params={
+        data = await self._send_request('GET', '/api/journal/acs/list', params={
             "p_limit": "30",
             "p_page": "1",
             "p_education": str(education_id)
         })
 
         return data['items']
+
+    async def get_accounts(self, child_uid: str) -> list[dict[str, str]]:
+        data = await self._send_request('GET', '/fps/api/netrika/mobile/v1/accounts/', json={
+            'RegId': child_uid
+        })
+
+        return data['accounts']

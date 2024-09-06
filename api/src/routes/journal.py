@@ -1,27 +1,38 @@
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Query
 
+from database.account import Account
 from lib.dnevnik_api import DnevnikClient
+from routes.responses import SuccessResponse, ErrorResponse
 
 journal_router = APIRouter(prefix='/journal')
 
 
 @journal_router.get('/token')
 async def get_token(email: str, password: str):
-    client = DnevnikClient()
+    account = await Account.find_one(Account.email == email, Account.password == password)
 
-    try:
-        await client.auth(email, password)
-    except:
-        return {'type': 'error', 'message': 'Не удалось войти в аккаунт'}
+    if not account:
+        client = DnevnikClient()
+        try:
+            await client.auth(email, password)
+        except:
+            return ErrorResponse('Не удалось войти в аккаунт', 401)
+        account = Account(uid=str(uuid.uuid4()), token=client._token, email=email, password=password)
+        await account.insert()
 
-    return {'type': 'success', 'data': {'token': client._token}}
+    return SuccessResponse({'token': account.uid})
 
 
 @journal_router.get('/children')
-async def get_acs(token: Annotated[str, Query(min_length=16)]):
-    client = DnevnikClient(token)
+async def get_acs(uid: Annotated[str, Query(alias='token', regex=r'^[\w-]+$')]):
+    account = await Account.find_one(Account.uid == uid)
+    if not account:
+        return ErrorResponse('Аккаунт не найден', 404)
+
+    client = DnevnikClient(account.token)
 
     children = await client.get_children()
 
@@ -41,4 +52,4 @@ async def get_acs(token: Annotated[str, Query(min_length=16)]):
             'uid': child['hash_uid']
         })
 
-    return {'type': 'success', 'data': data}
+    return SuccessResponse(data)

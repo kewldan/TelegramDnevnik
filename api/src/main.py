@@ -2,9 +2,13 @@ import sys
 
 import uvicorn
 
+from config import config
+from database import connect
+
 
 async def main():
-    server_config = uvicorn.Config('server:app', host='0.0.0.0', port=80, log_level='info',
+    await connect()
+    server_config = uvicorn.Config('server:app', host='0.0.0.0', port=config.port, log_level='info',
                                    server_header=False, date_header=True)
     server = uvicorn.Server(server_config)
     await server.serve()
