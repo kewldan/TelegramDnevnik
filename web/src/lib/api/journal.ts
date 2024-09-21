@@ -57,7 +57,7 @@ export type Subject = {
     marks: {
         id: number;
         date: string;
-        value: number;
+        value: string;
         why: string;
         comment: string | null;
     }[];

@@ -12,7 +12,7 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer";
 import {Subject} from "@/lib/api";
-import Mark, {MarkValue} from "@/components/mark";
+import Mark from "@/components/mark";
 import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
 import {useSelector} from "react-redux";
@@ -51,7 +51,7 @@ const weights: Record<string, number> = {
 }
 
 export default function SubjectCard({subject}: { subject: Subject }) {
-    const avg = subject.marks.reduce((sum, mark) => sum + mark.value * (weights[mark.why] || 1), 0) / subject.marks.reduce((sum, mark) => sum + (weights[mark.why] || 1), 0);
+    const avg = subject.marks.reduce((sum, mark) => sum + (isNaN(Number.parseInt(mark.value)) ? 0 : Number.parseInt(mark.value)) * (weights[mark.why] || 1), 0) / subject.marks.reduce((sum, mark) => sum + (isNaN(Number.parseInt(mark.value)) ? 0 : (weights[mark.why] || 1)), 0);
     const period = useSelector((root: RootState) => root.period.period);
 
     return (
@@ -62,7 +62,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                     <div className="flex gap-0.5">
                         {
                             subject.marks.map(mark => (
-                                <Mark key={mark.id} value={mark.value as MarkValue}
+                                <Mark key={mark.id} value={mark.value}
                                       className="text-lg"/>
                             ))
                         }
@@ -89,7 +89,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                             subject.marks.map(mark => (
                                 <div key={mark.id.toString()} className="flex gap-2 text-lg">
                                     <span className="w-24">{mark.date}</span>
-                                    <Mark value={mark.value as MarkValue} className="w-3"/>
+                                    <Mark value={mark.value} className="w-3"/>
                                     <span>{mark.why}</span>
                                     <span>{mark.comment}</span>
                                 </div>
