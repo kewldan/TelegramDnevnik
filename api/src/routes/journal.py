@@ -95,10 +95,13 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
             }
             subjects[subject_id] = subject
 
+        value = item['estimate_value_name']
+
+
         subject['marks'].append({
             'id': item['id'],
             'date': item['date'],
-            'value': int(item['estimate_value_name']),
+            'value': value,
             'why': item['estimate_type_name'],
             'comment': item['estimate_comment']
         })
