@@ -24,7 +24,8 @@ export default function Loader({children}: { children: ReactNode }) {
         if (!behavior)
             return;
 
-        behavior.disableVerticalSwipe();
+        if (behavior.supports('disableVerticalSwipe'))
+            behavior.disableVerticalSwipe();
     }, [behavior]);
 
     if (!mounted)
