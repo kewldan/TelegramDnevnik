@@ -9,6 +9,13 @@ export async function getToken(email: string, password: string): Promise<string>
     return data['token'] as string;
 }
 
+export type Period = {
+    id: number;
+    name: string;
+    from: string;
+    to: string;
+};
+
 export type Child = {
     education_name: string;
     education_id: number;
@@ -19,10 +26,7 @@ export type Child = {
     surname: string;
     middle_name: string;
     uid: string;
-    periods: {
-        id: number;
-        name: string;
-    }[];
+    periods: Period[];
 }
 
 export async function getChildren(token: string): Promise<Child[]> {
@@ -53,11 +57,14 @@ export type Subject = {
     }[];
 }
 
-export async function getSubjects(token: string, educationId: number): Promise<Subject[]> {
+export async function getSubjects(token: string, educationId: number, dateFrom: string, dateTo: string): Promise<Subject[]> {
     return await sendRequest(`/journal/children/${educationId}/subjects`, {
         headers: {
             'X-Api-Token': token
         }
+    }, {
+        date_from: dateFrom,
+        date_to: dateTo
     })
 }
 

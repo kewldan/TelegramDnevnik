@@ -3,26 +3,27 @@
 import React from "react";
 import {
     Drawer,
-    DrawerClose,
     DrawerContent,
     DrawerDescription,
-    DrawerFooter,
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger
 } from "@/components/ui/drawer";
-import {Button} from "@/components/ui/button";
 import {Subject} from "@/lib/api";
 import Mark, {MarkValue} from "@/components/mark";
 import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
 import {ChevronDown} from "lucide-react";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 export default function SubjectCard({subject}: { subject: Subject }) {
     const avg = subject.marks.reduce((sum, mark) => sum + mark.value, 0) / subject.marks.reduce((sum, mark) => sum + 1, 0);
+    const period = useSelector((root: RootState) => root.period.period);
 
     return (
-        <Drawer>
+        <Drawer fadeFromIndex={0} snapPoints={[1]}>
             <DrawerTrigger className="border rounded-lg p-2 flex justify-between">
                 <div className="flex flex-col items-start w-full pr-4">
                     <p className="text-lg font-medium">{subject.name}</p>
@@ -48,17 +49,25 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                     <ChevronDown className="text-muted-foreground"/>
                 </div>
             </DrawerTrigger>
-            <DrawerContent>
+            <DrawerContent className="min-h-screen">
                 <DrawerHeader>
-                    <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-                    <DrawerDescription>This action cannot be undone.</DrawerDescription>
+                    <DrawerTitle>{subject.name}</DrawerTitle>
+                    <DrawerDescription>за {period?.name}</DrawerDescription>
                 </DrawerHeader>
-                <DrawerFooter>
-                    <Button>Submit</Button>
-                    <DrawerClose>
-                        <Button variant="outline">Cancel</Button>
-                    </DrawerClose>
-                </DrawerFooter>
+                <ScrollArea className="max-h-72">
+                    <div className="p-2">
+                        {
+                            subject.marks.map(mark => (
+                                <div key={mark.id.toString()} className="flex gap-2 text-lg">
+                                    <span>{mark.date}</span>
+                                    <Mark value={mark.value as MarkValue}/>
+                                    <span>{mark.why}</span>
+                                    <span>{mark.comment}</span>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </ScrollArea>
             </DrawerContent>
         </Drawer>
     )

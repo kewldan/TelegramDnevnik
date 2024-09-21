@@ -1,13 +1,19 @@
 import {configureStore} from '@reduxjs/toolkit';
-import childReducer from './features/childSlice';
-import authReducer from './features/authSlice';
+import {childReducer, ChildState} from './features/childSlice';
+import {authReducer, AuthState} from './features/authSlice';
+import {periodReducer, PeriodState} from './features/periodSlice';
 import {loadState, saveState} from "@/lib/localStorage";
 
-const store = configureStore({
+const store = configureStore<{
+    auth: AuthState;
+    child: ChildState;
+    period: PeriodState;
+}>({
     reducer: {
         auth: authReducer,
         child: childReducer,
-    } as any,
+        period: periodReducer
+    },
     preloadedState: loadState()
 });
 

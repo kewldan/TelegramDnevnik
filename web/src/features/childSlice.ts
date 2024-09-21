@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Child} from "@/lib/api";
 
-interface ChildState {
+export interface ChildState {
     selected: Child | null;
 }
 
@@ -20,4 +20,4 @@ const childSlice = createSlice({
 });
 
 export const {setSelectedChild} = childSlice.actions;
-export default childSlice.reducer;
+export const childReducer = childSlice.reducer;

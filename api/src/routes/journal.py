@@ -58,7 +58,9 @@ async def get_children(client: AccessClient):
 
             periods.append({
                 'id': item['identity']['id'],
-                'name': item['name']
+                'name': item['name'],
+                'from': item['date_from'],
+                'to': item['date_to'],
             })
 
         data.append({
@@ -78,8 +80,8 @@ async def get_children(client: AccessClient):
 
 
 @journal_router.get('/children/{education_id}/subjects')
-async def get_subjects(client: AccessClient, education_id: int):
-    data = await client.get_marks(education_id, datetime.now() - timedelta(days=1), datetime.now() + timedelta(days=1))
+async def get_subjects(client: AccessClient, education_id: int, date_from: str, date_to: str):
+    data = await client.get_marks(education_id, date_from, date_to)
 
     subjects = {}
 
