@@ -1,7 +1,9 @@
 import uuid
+from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Header
+from fastapi.params import Depends
 
 from database.account import Account
 from lib.dnevnik_api import DnevnikClient
@@ -26,20 +28,39 @@ async def get_token(email: str, password: str):
     return SuccessResponse({'token': account.uid})
 
 
-@journal_router.get('/children')
-async def get_acs(uid: Annotated[str, Query(alias='token', regex=r'^[\w-]+$')]):
-    account = await Account.find_one(Account.uid == uid)
+async def get_account_from_uid(uid: Annotated[str, Header(alias='X-Api-Token', regex=r'^[\w-]+$')]):
+    account = await Account.find_one({'uid': uid})
     if not account:
         return ErrorResponse('Аккаунт не найден', 404)
 
-    client = DnevnikClient(account.token)
+    return DnevnikClient(account.token)
 
+
+AccessClient = Annotated[DnevnikClient, Depends(get_account_from_uid)]
+
+
+@journal_router.get('/children')
+async def get_children(client: AccessClient):
     children = await client.get_children()
 
     data = []
 
     for child in children:
         education = child['educations'][0]
+
+        periods_data = await client.get_periods(education['group_id'])
+
+        periods = []
+
+        for item in periods_data['items']:
+            if item['education_period']['id'] == 23:  # Skip
+                continue
+
+            periods.append({
+                'id': item['identity']['id'],
+                'name': item['name']
+            })
+
         data.append({
             'education_name': education['institution_name'],
             'education_id': education['education_id'],
@@ -49,7 +70,35 @@ async def get_acs(uid: Annotated[str, Query(alias='token', regex=r'^[\w-]+$')]):
             'first_name': child['firstname'],
             'surname': child['surname'],
             'middle_name': child['middlename'],
-            'uid': child['hash_uid']
+            'uid': child['hash_uid'],
+            'periods': periods
         })
 
     return SuccessResponse(data)
+
+
+@journal_router.get('/children/{education_id}/subjects')
+async def get_subjects(client: AccessClient, education_id: int):
+    data = await client.get_marks(education_id, datetime.now() - timedelta(days=1), datetime.now() + timedelta(days=1))
+
+    subjects = {}
+
+    for item in data:
+        subject_id = item['subject_id']
+        subject = subjects[subject_id] if subject_id in subjects else None
+        if subject is None:
+            subject = {
+                'name': item['subject_name'],
+                'marks': []
+            }
+            subjects[subject_id] = subject
+
+        subject['marks'].append({
+            'id': item['id'],
+            'date': item['date'],
+            'value': int(item['estimate_value_name']),
+            'why': item['estimate_type_name'],
+            'comment': item['estimate_comment']
+        })
+
+    return SuccessResponse([{**subjects[k], 'id': k} for k in subjects.keys()])

@@ -1,4 +1,5 @@
 import sys
+from contextlib import suppress
 
 import uvicorn
 
@@ -15,11 +16,12 @@ async def main():
 
 
 if __name__ == '__main__':
-    if sys.platform in ['linux', 'darwin']:
-        import uvloop
+    with suppress(KeyboardInterrupt):
+        if sys.platform in ['linux', 'darwin']:
+            import uvloop
 
-        uvloop.run(main())
-    else:
-        import asyncio
+            uvloop.run(main())
+        else:
+            import asyncio
 
-        asyncio.run(main())
+            asyncio.run(main())

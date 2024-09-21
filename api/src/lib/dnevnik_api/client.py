@@ -1,6 +1,9 @@
 import json
+from datetime import datetime
 
 import aiohttp
+
+from .utils import serialize_datetime
 
 
 class DnevnikClient:
@@ -33,7 +36,7 @@ class DnevnikClient:
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.request(method, url, headers=headers, **kwargs) as resp:
                 response = await resp.json()
-                print(json.dumps(response, indent=4))
+                print(json.dumps(response, ensure_ascii=False))
                 return response['data']
 
     async def auth(self, email: str, password: str) -> None:
@@ -67,6 +70,38 @@ class DnevnikClient:
             "p_limit": "30",
             "p_page": "1",
             "p_education": str(education_id)
+        })
+
+        return data['items']
+
+    async def get_lessons(self, education_id: int, date_from: datetime, date_to: datetime):
+        data = await self._send_request('GET', '/api/journal/lesson/list-by-education', params={
+            'p_limit': '500',
+            'p_page': '1',
+            'p_datetime_from': serialize_datetime(date_from),
+            'p_datetime_to': serialize_datetime(date_to),
+            'p_educations[]': str(education_id)
+        })
+
+        return data['items']
+
+    async def get_schedule(self, education_id: int, date_from: datetime, date_to: datetime):
+        data = await self._send_request('GET', '/api/journal/schedule/list-by-education', params={
+            'p_limit': '500',
+            'p_page': '1',
+            'p_datetime_from': serialize_datetime(date_from),
+            'p_datetime_to': serialize_datetime(date_to),
+            'p_educations[]': str(education_id)
+        })
+
+        return data['items']
+
+    async def get_marks(self, education_id: int, date_from: datetime, date_to: datetime):
+        data = await self._send_request('GET', '/api/journal/estimate/table', params={
+            'p_limit': '1000',
+            'p_datetime_from': serialize_datetime(date_from),
+            'p_datetime_to': serialize_datetime(date_to),
+            'p_educations[]': str(education_id)
         })
 
         return data['items']

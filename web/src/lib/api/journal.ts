@@ -19,10 +19,52 @@ export type Child = {
     surname: string;
     middle_name: string;
     uid: string;
+    periods: {
+        id: number;
+        name: string;
+    }[];
 }
 
 export async function getChildren(token: string): Promise<Child[]> {
-    return await sendRequest('/journal/children', undefined, {
-        token
+    return await sendRequest('/journal/children', {
+        headers: {
+            'X-Api-Token': token
+        }
+    })
+}
+
+export async function getACS(token: string, educationId: number): Promise<Child[]> {
+    return await sendRequest(`/journal/children/${educationId}/acs`, {
+        headers: {
+            'X-Api-Token': token
+        }
+    })
+}
+
+export type Subject = {
+    id: number;
+    name: string;
+    marks: {
+        id: number;
+        date: string;
+        value: number;
+        why: string;
+        comment: string | null;
+    }[];
+}
+
+export async function getSubjects(token: string, educationId: number): Promise<Subject[]> {
+    return await sendRequest(`/journal/children/${educationId}/subjects`, {
+        headers: {
+            'X-Api-Token': token
+        }
+    })
+}
+
+export async function getSchedule(token: string, educationId: number): Promise<Child[]> {
+    return await sendRequest(`/journal/children/${educationId}/schedule`, {
+        headers: {
+            'X-Api-Token': token
+        }
     })
 }
