@@ -81,3 +81,18 @@ export async function getSchedule(token: string, educationId: number): Promise<u
         }
     })
 }
+
+export type FinanceItem = {
+    id: string;
+    name: string;
+    balance: number;
+    customer: string;
+}
+
+export async function getFinance(token: string, hashUid: string): Promise<FinanceItem[]> {
+    return await sendRequest(`/journal/children/${hashUid}/finance`, {
+        headers: {
+            'X-Api-Token': token
+        }
+    })
+}

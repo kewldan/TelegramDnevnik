@@ -25,7 +25,8 @@ class DnevnikClient:
         headers = {
             "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36",
             "accept": "application/json",
-            "accept-charset": "UTF-8"
+            "accept-charset": "UTF-8",
+            'x-jwt-token': self._token
         }
 
         if 'headers' in kwargs:
@@ -34,8 +35,11 @@ class DnevnikClient:
 
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.request(method, url, headers=headers, **kwargs) as resp:
-                response = await resp.json()
-                return response['data']
+                response = await resp.json(content_type=None)
+                if 'data' in response:
+                    return response['data']
+                else:
+                    return response
 
     async def auth(self, email: str, password: str, **kwargs) -> None:
         data = await self._send_request('POST', '/api/user/auth/login', json={
@@ -115,7 +119,7 @@ class DnevnikClient:
         return data['items']
 
     async def get_accounts(self, child_uid: str, **kwargs) -> list[dict[str, str]]:
-        data = await self._send_request('GET', '/fps/api/netrika/mobile/v1/accounts/', json={
+        data = await self._send_request('POST', '/fps/api/netrika/mobile/v1/accounts/', data={
             'RegId': child_uid
         }, **kwargs)
 

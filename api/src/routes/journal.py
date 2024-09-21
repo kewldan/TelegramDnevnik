@@ -131,3 +131,21 @@ async def get_acs(client: AccessClient, education_id: int):
         })
 
     return SuccessResponse(items)
+
+
+@journal_router.get('/children/{hash_uid}/finance')
+async def get_finance(client: AccessClient, hash_uid: str):
+    data = await client.get_accounts(hash_uid)
+
+    items = []
+
+    for account in data:
+        print(account)
+        items.append({
+            'id': account['id'],
+            'name': account['accounttypename'],
+            'balance': float(account['sum']),
+            'customer': account['customer_name'],
+        })
+
+    return SuccessResponse(items)

@@ -92,8 +92,8 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                         {
                             subject.marks.map(mark => (
                                 <div key={mark.id.toString()} className="flex gap-2 text-lg">
-                                    <span>{mark.date}</span>
-                                    <Mark value={mark.value as MarkValue}/>
+                                    <span className="w-24">{mark.date}</span>
+                                    <Mark value={mark.value as MarkValue} className="w-3"/>
                                     <span>{mark.why}</span>
                                     <span>{mark.comment}</span>
                                 </div>

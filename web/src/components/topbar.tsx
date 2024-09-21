@@ -3,6 +3,7 @@ import ChildSelector from "@/components/child-selector";
 import {Bell, RefreshCcw, Settings} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import ACSDrawer from "@/components/acs-drawer";
+import BalanceDrawer from "@/components/balance-drawer";
 
 export default function TopBar() {
     return (
@@ -13,6 +14,7 @@ export default function TopBar() {
                     <RefreshCcw/>
                 </Button>
                 <ACSDrawer/>
+                <BalanceDrawer/>
                 <Button size="icon" variant="ghost">
                     <Bell/>
                 </Button>

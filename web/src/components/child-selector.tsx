@@ -7,12 +7,15 @@ import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 import {Child, getChildren} from "@/lib/api";
 import {setSelectedChild} from "@/features/childSlice";
 import {ChevronDown} from "lucide-react";
+import {useHapticFeedback} from "@telegram-apps/sdk-react";
 
 export default function ChildSelector() {
+    const hapticFeedback = useHapticFeedback(true);
+    const dispatch = useDispatch();
+
     const selected = useSelector((state: RootState) => state.child.selected);
     const token = useSelector((state: RootState) => state.auth.token);
     const [children, setChildren] = useState<Child[]>([]);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         if (!token)
@@ -47,6 +50,8 @@ export default function ChildSelector() {
                     {
                         children.map(item => (
                             <DropdownMenuItem key={item.uid} onClick={() => {
+                                if (hapticFeedback)
+                                    hapticFeedback.impactOccurred('heavy');
                                 dispatch(setSelectedChild(item));
                             }}>{item.surname} {item.first_name} [{item.group_name}]</DropdownMenuItem>
                         ))
