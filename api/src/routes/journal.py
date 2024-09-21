@@ -103,4 +103,31 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
             'comment': item['estimate_comment']
         })
 
-    return SuccessResponse([{**subjects[k], 'id': k} for k in subjects.keys()])
+    return SuccessResponse(sorted([{**subjects[k], 'id': k} for k in subjects.keys()], key=lambda x: x['name']))
+
+
+@journal_router.get('/children/{education_id}/schedule')
+async def get_schedule(client: AccessClient, education_id: int):
+    today = datetime.now()
+    last_monday = today - timedelta(days=today.weekday() * 100)
+    last_sunday = last_monday + timedelta(days=6)
+
+    data = await client.get_schedule(education_id, last_monday, last_sunday)
+    print(data)
+
+    return SuccessResponse(data)
+
+
+@journal_router.get('/children/{education_id}/acs')
+async def get_acs(client: AccessClient, education_id: int):
+    data = await client.get_acs(education_id)
+
+    items = []
+    for item in data:
+        items.append({
+            'id': item['identity']['id'],
+            'dir': 'i' if item['direction'] == 'input' else 'o',
+            'date': item['datetime']
+        })
+
+    return SuccessResponse(items)

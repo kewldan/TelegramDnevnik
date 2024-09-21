@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/store";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {redirect} from "next/navigation";
 import {Child, getChildren} from "@/lib/api";
 import {setSelectedChild} from "@/features/childSlice";
 import {ChevronDown} from "lucide-react";
@@ -15,10 +14,10 @@ export default function ChildSelector() {
     const [children, setChildren] = useState<Child[]>([]);
     const dispatch = useDispatch();
 
-    if (!token)
-        redirect('/');
-
     useEffect(() => {
+        if (!token)
+            return;
+
         getChildren(token).then(children => {
             setChildren(children);
 

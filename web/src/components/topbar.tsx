@@ -1,9 +1,8 @@
-'use client';
-
 import React from "react";
 import ChildSelector from "@/components/child-selector";
-import {RefreshCcw, Settings} from "lucide-react";
+import {Bell, RefreshCcw, Settings} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import ACSDrawer from "@/components/acs-drawer";
 
 export default function TopBar() {
     return (
@@ -12,6 +11,10 @@ export default function TopBar() {
             <div>
                 <Button size="icon" variant="ghost">
                     <RefreshCcw/>
+                </Button>
+                <ACSDrawer/>
+                <Button size="icon" variant="ghost">
+                    <Bell/>
                 </Button>
                 <Button size="icon" variant="ghost">
                     <Settings/>

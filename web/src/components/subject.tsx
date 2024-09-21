@@ -3,8 +3,10 @@
 import React from "react";
 import {
     Drawer,
+    DrawerClose,
     DrawerContent,
     DrawerDescription,
+    DrawerFooter,
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger
@@ -17,9 +19,40 @@ import {ChevronDown} from "lucide-react";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store";
 import {ScrollArea} from "@/components/ui/scroll-area";
+import {Button} from "@/components/ui/button";
+
+const weights: Record<string, number> = {
+    "Работа на уроке": 1,
+    "Домашнее задание": 1,
+    "Самостоятельная работа": 1.2,
+    "Практическая работа": 1.3,
+    "Лабораторная работа": 1.3,
+    "Проверочная работа": 1.3,
+    "Словарный диктант": 1.4,
+    "Контрольная работа": 1.5,
+    "Административная контрольная работа": 1.5,
+    "Срезовая работа": 1.3,
+    "Контрольная практическая работа": 1.5,
+    "Классное сочинение": 1.5,
+    "Домашнее сочинение": 1.4,
+    "Аудирование": 1.4,
+    "Контрольный диктант": 1.5,
+    "Зачет": 1.5,
+    "Изложение": 1.4,
+    "Дистанционный урок": 1,
+    "Электронное обучение": 1,
+    "Тест": 1,
+    "Ведение тетради": 1,
+    "Чтение наизусть": 1,
+    "Сочинение": 1,
+    "Пр.": 1,
+    "Викторина": 1,
+    "Работа над ошибками": 1,
+    "Контроль УУД": 1,
+}
 
 export default function SubjectCard({subject}: { subject: Subject }) {
-    const avg = subject.marks.reduce((sum, mark) => sum + mark.value, 0) / subject.marks.reduce((sum, mark) => sum + 1, 0);
+    const avg = subject.marks.reduce((sum, mark) => sum + mark.value * (weights[mark.why] || 1), 0) / subject.marks.reduce((sum, mark) => sum + (weights[mark.why] || 1), 0);
     const period = useSelector((root: RootState) => root.period.period);
 
     return (
@@ -68,6 +101,13 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                         }
                     </div>
                 </ScrollArea>
+                <DrawerFooter>
+                    <DrawerClose asChild>
+                        <Button variant="outline">
+                            Закрыть
+                        </Button>
+                    </DrawerClose>
+                </DrawerFooter>
             </DrawerContent>
         </Drawer>
     )

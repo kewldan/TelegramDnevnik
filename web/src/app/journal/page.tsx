@@ -5,7 +5,7 @@ import {RootState} from "@/store";
 import React, {useEffect, useState} from "react";
 import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Child, getSubjects, Subject} from "@/lib/api";
-import SubjectCard from "@/app/subject";
+import SubjectCard from "@/components/subject";
 import {setSelectedPeriod} from "@/features/periodSlice";
 
 export default function Home() {

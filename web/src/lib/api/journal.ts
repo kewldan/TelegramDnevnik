@@ -37,7 +37,13 @@ export async function getChildren(token: string): Promise<Child[]> {
     })
 }
 
-export async function getACS(token: string, educationId: number): Promise<Child[]> {
+export type ACSItem = {
+    id: string;
+    dir: 'i' | 'o';
+    date: string;
+}
+
+export async function getACS(token: string, educationId: number): Promise<ACSItem[]> {
     return await sendRequest(`/journal/children/${educationId}/acs`, {
         headers: {
             'X-Api-Token': token
@@ -68,7 +74,7 @@ export async function getSubjects(token: string, educationId: number, dateFrom: 
     })
 }
 
-export async function getSchedule(token: string, educationId: number): Promise<Child[]> {
+export async function getSchedule(token: string, educationId: number): Promise<unknown> {
     return await sendRequest(`/journal/children/${educationId}/schedule`, {
         headers: {
             'X-Api-Token': token
