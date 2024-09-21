@@ -15,7 +15,6 @@ import {Subject} from "@/lib/api";
 import Mark, {MarkValue} from "@/components/mark";
 import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
-import {ChevronDown} from "lucide-react";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store";
 import {ScrollArea} from "@/components/ui/scroll-area";
@@ -59,7 +58,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
         <Drawer fadeFromIndex={0} snapPoints={[1]}>
             <DrawerTrigger className="border rounded-lg p-2 flex justify-between">
                 <div className="flex flex-col items-start w-full pr-4">
-                    <p className="text-lg font-medium">{subject.name}</p>
+                    <p className="text-lg font-medium text-left">{subject.name}</p>
                     <div className="flex gap-0.5">
                         {
                             subject.marks.map(mark => (
@@ -69,8 +68,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                         }
                     </div>
                 </div>
-                <div className="flex flex-col items-end justify-between">
-                    <Badge variant="secondary">
+                <Badge variant="secondary">
                                                     <span className={cn('text-purple-500',
                                                         avg >= 1.5 && 'text-red-500',
                                                         avg >= 2.5 && 'text-yellow-600',
@@ -78,9 +76,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                                                         avg >= 4.5 && 'text-green-600')}>
                                                         {avg.toFixed(2)}
                                                     </span>
-                    </Badge>
-                    <ChevronDown className="text-muted-foreground"/>
-                </div>
+                </Badge>
             </DrawerTrigger>
             <DrawerContent className="min-h-screen">
                 <DrawerHeader>
