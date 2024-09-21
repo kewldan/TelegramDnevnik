@@ -8,23 +8,27 @@ import {Child, getChildren} from "@/lib/api";
 import {setSelectedChild} from "@/features/childSlice";
 import {ChevronDown} from "lucide-react";
 import {useHapticFeedback} from "@telegram-apps/sdk-react";
+import {useRouter} from "next/navigation";
 
 export default function ChildSelector() {
     const hapticFeedback = useHapticFeedback(true);
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const selected = useSelector((state: RootState) => state.child.selected);
     const token = useSelector((state: RootState) => state.auth.token);
     const [children, setChildren] = useState<Child[]>([]);
 
     useEffect(() => {
-        if (!token)
+        if (!token) {
+            router.replace('/');
             return;
+        }
 
         getChildren(token).then(children => {
             setChildren(children);
 
-            if (!selected)
+            if (!selected && children.length > 0)
                 dispatch(setSelectedChild(children[0]));
         });
     }, [dispatch, selected, token]);
