@@ -1,7 +1,7 @@
 pydantic~=2.9.2
 aiogram~=3.13.1
 fastapi~=0.115.0
-starlette~=0.38.5
+starlette~=0.38.6
 motor~=3.6.0
 uvicorn~=0.30.6
 beanie~=1.26.0
