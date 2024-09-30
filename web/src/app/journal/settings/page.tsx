@@ -17,7 +17,6 @@ export default function SettingsPage() {
                     if (cloudStorage) {
                         cloudStorage.delete('token').then();
                     }
-
                     if (app) {
                         app.close();
                     }
