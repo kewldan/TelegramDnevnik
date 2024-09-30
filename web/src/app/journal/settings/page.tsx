@@ -5,8 +5,8 @@ import React from "react";
 import {useCloudStorage, useMiniApp} from "@telegram-apps/sdk-react";
 
 export default function SettingsPage() {
-    const app = useMiniApp(true);
     const cloudStorage = useCloudStorage(true);
+    const app = useMiniApp(true);
 
     return (
         <main className="px-2 min-h-visual flex flex-col justify-end">
