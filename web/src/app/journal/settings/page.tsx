@@ -31,7 +31,7 @@ export default function SettingsPage() {
                                                         className="text-primary underline underline-offset-2">kewldan</a>
                     </p>
                     <p>
-                        Сделано как ИП за 10кл в №530 школе.
+                        Сделано как ИП за 10 класс в №530 школе.
                     </p>
                 </div>
             </div>
