@@ -67,3 +67,7 @@
         @apply bg-background text-foreground;
     }
 }
+
+.min-h-visual {
+    min-height: calc(100vh - 7.5rem);
+}

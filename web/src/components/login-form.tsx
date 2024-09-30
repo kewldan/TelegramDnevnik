@@ -26,11 +26,12 @@ export default function LoginForm() {
             <SpbLogo/>
             <div className="w-full">
                 <Label>Почта</Label>
-                <Input type="email" value={email} onChange={e => setEmail(e.target.value)}/>
+                <Input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)}/>
             </div>
             <div className="w-full">
                 <Label>Пароль</Label>
-                <Input type="password" value={password} onChange={e => setPassword(e.target.value)}/>
+                <Input type="password" autoComplete="current-password" value={password}
+                       onChange={e => setPassword(e.target.value)}/>
             </div>
             <Button className="w-full" type="submit" onClick={() => {
                 if (!cloud)

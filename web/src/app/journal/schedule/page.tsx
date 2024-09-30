@@ -17,8 +17,8 @@ export default function JobPage() {
     }, [child, token]);
 
     return (
-        <main className="p-2">
-            Расписание
+        <main className="p-2 min-h-visual">
+            Пу-пу-пу
         </main>
     )
 }

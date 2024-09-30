@@ -30,7 +30,7 @@ export default function Home() {
     }, [dispatch, period, selected])
 
     return (
-        <main className="px-2">
+        <main className="px-2 min-h-visual">
             {
                 selected && period && (
                     <Tabs onValueChange={v => {

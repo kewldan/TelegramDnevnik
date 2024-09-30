@@ -98,6 +98,8 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
         value = item['estimate_value_name']
         if item['estimate_type_code'] == '30000':
             value = 'Н'
+        elif item['estimate_value_name'] == 'Замечание':
+            value = '!'
 
         subject['marks'].append({
             'id': item['id'],
@@ -106,6 +108,8 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
             'why': item['estimate_type_name'],
             'comment': item['estimate_comment']
         })
+
+        subject['marks'].sort(key=lambda mark: mark['date'])
 
     return SuccessResponse(sorted([{**subjects[k], 'id': k} for k in subjects.keys()], key=lambda x: x['name']))
 
@@ -137,6 +141,23 @@ async def get_acs(client: AccessClient, education_id: int):
     return SuccessResponse(items)
 
 
+@journal_router.get('/{children}/{education_id}/teachers')
+async def get_teachers(client: AccessClient, education_id: int):
+    data = await client.get_teachers(education_id)
+
+    teachers = []
+
+    for item in data:
+        teachers.append({
+            'id': item['identity']['id'],
+            'name': f'{item["surname"]} {item["firstname"]} {item["middlename"]}',
+            'position': item['position_name'],
+            'subjects': item['subjects'],
+        })
+
+    return SuccessResponse(teachers)
+
+
 @journal_router.get('/children/{hash_uid}/finance')
 async def get_finance(client: AccessClient, hash_uid: str):
     data = await client.get_accounts(hash_uid)
@@ -144,7 +165,6 @@ async def get_finance(client: AccessClient, hash_uid: str):
     items = []
 
     for account in data:
-        print(account)
         items.append({
             'id': account['id'],
             'name': account['accounttypename'],

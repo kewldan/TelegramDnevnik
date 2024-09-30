@@ -108,6 +108,15 @@ class DnevnikClient:
 
         return data['items']
 
+    async def get_teachers(self, education_id: int, **kwargs):
+        data = await self._send_request('GET',
+                                        '/api/journal/teacher/list', params={
+                'p_page': '1',
+                'p_educations[]': str(education_id),
+            }, **kwargs)
+
+        return data['items']
+
     async def get_subjects(self, group_id: int, period_id: int, **kwargs):
         data = await self._send_request('GET', '/api/journal/subject/list-studied', params={
             "p_limit": "500",

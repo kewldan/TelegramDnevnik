@@ -53,29 +53,35 @@ const weights: Record<string, number> = {
 export default function SubjectCard({subject}: { subject: Subject }) {
     const avg = subject.marks.reduce((sum, mark) => sum + (isNaN(Number.parseInt(mark.value)) ? 0 : Number.parseInt(mark.value)) * (weights[mark.why] || 1), 0) / subject.marks.reduce((sum, mark) => sum + (isNaN(Number.parseInt(mark.value)) ? 0 : (weights[mark.why] || 1)), 0);
     const period = useSelector((root: RootState) => root.period.period);
+    const displayedMarks = subject.marks.filter(mark => ['1', '2', '3', '4', '5'].includes(mark.value));
 
     return (
         <Drawer fadeFromIndex={0} snapPoints={[1]}>
-            <DrawerTrigger className="border rounded-lg p-2 flex justify-between">
+            <DrawerTrigger
+                className={cn("border rounded-lg p-2 flex justify-between", subject.marks.length === 0 && "hidden")}>
                 <div className="flex flex-col items-start w-full pr-4">
                     <p className="text-lg font-medium text-left">{subject.name}</p>
                     <div className="flex gap-0.5">
                         {
-                            subject.marks.map(mark => (
-                                <Mark key={mark.id} value={mark.value}
-                                      className="text-lg"/>
-                            ))
+                            displayedMarks.length > 0 ? (
+                                displayedMarks.map(mark => (
+                                    <Mark key={mark.id} value={mark.value}
+                                          className="text-lg"/>
+                                ))
+                            ) : (
+                                <p className="text-sm text-muted-foreground">Нет отметок</p>
+                            )
                         }
                     </div>
                 </div>
-                <Badge variant="secondary">
-                                                    <span className={cn('text-purple-500',
-                                                        avg >= 1.5 && 'text-red-500',
-                                                        avg >= 2.5 && 'text-yellow-600',
-                                                        avg >= 3.5 && 'text-green-400',
-                                                        avg >= 4.5 && 'text-green-600')}>
-                                                        {avg.toFixed(2)}
-                                                    </span>
+                <Badge variant="secondary" className={cn(displayedMarks.length === 0 && "invisible")}>
+                    <span className={cn('text-purple-500',
+                        avg >= 1.5 && 'text-red-500',
+                        avg >= 2.5 && 'text-yellow-600',
+                        avg >= 3.5 && 'text-green-400',
+                        avg >= 4.5 && 'text-green-600')}>
+                        {avg.toFixed(2)}
+                    </span>
                 </Badge>
             </DrawerTrigger>
             <DrawerContent className="min-h-screen">
@@ -84,18 +90,18 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                     <DrawerDescription>за {period?.name}</DrawerDescription>
                 </DrawerHeader>
                 <ScrollArea className="max-h-72">
-                    <div className="p-2">
+                    <pre className="p-2 font-sans">
                         {
                             subject.marks.map(mark => (
                                 <div key={mark.id.toString()} className="flex gap-2 text-lg">
-                                    <span className="w-24">{mark.date}</span>
+                                    <span>{mark.date}</span>
                                     <Mark value={mark.value} className="w-3"/>
                                     <span>{mark.why}</span>
                                     <span>{mark.comment}</span>
                                 </div>
                             ))
                         }
-                    </div>
+                    </pre>
                 </ScrollArea>
                 <DrawerFooter>
                     <DrawerClose asChild>

@@ -8,14 +8,6 @@ import LoginAnimation from '#/animations/_DUCK23_HEARTS_OUT.json';
 import React, {ReactNode, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import SpbLogo from "@/components/spb-logo";
-import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger
-} from "@/components/ui/drawer";
 import LoginForm from "@/components/login-form";
 import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
@@ -80,7 +72,7 @@ const slides: Slide[] = [
                 Для начала, тебе нужно войти в аккаунт с данными от официального сайта
             </p>
         ),
-        button: 'ок'
+        button: ''
     }
 ]
 
@@ -107,24 +99,8 @@ export default function GreetingPage() {
                     {currentSlide.description}
                 </span>
             </div>
-            {(slide + 1) === slides.length ? (
-                <Drawer snapPoints={[1]} fadeFromIndex={0}>
-                    <DrawerTrigger asChild>
-                        <Button size="lg" className="w-full">
-                            {currentSlide.button}
-                        </Button>
-                    </DrawerTrigger>
-                    <DrawerContent>
-                        <DrawerHeader>
-                            <DrawerTitle>Введите данные для входа</DrawerTitle>
-                            <DrawerDescription>Это будет Ваш аккаунт</DrawerDescription>
-                        </DrawerHeader>
-                        <div className="w-full flex justify-center p-4">
-                            <LoginForm/>
-                        </div>
-                    </DrawerContent>
-                </Drawer>
-            ) : (
+            <LoginForm/>
+            {(slide + 1) !== slides.length && (
                 <Button size="lg" className="w-full" onClick={() => {
                     setSlide(v => v + 1);
                 }}>

@@ -15,7 +15,7 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer";
 import {Button} from "@/components/ui/button";
-import {Coins} from "lucide-react";
+import {Wallet} from "lucide-react";
 import {formatCurrency} from "@/lib/utils";
 import {useHapticFeedback} from "@telegram-apps/sdk-react";
 
@@ -44,7 +44,7 @@ export default function BalanceDrawer() {
         <Drawer snapPoints={[1]} fadeFromIndex={0}>
             <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon">
-                    <Coins/>
+                    <Wallet/>
                 </Button>
             </DrawerTrigger>
             <DrawerContent>
