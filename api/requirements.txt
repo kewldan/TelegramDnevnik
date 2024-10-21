@@ -6,4 +6,4 @@ motor~=3.6.0
 uvicorn~=0.31.1
 beanie~=1.27.0
 aiohttp[speedups]~=3.10.10
-uvloop~=0.20.0; sys_platform == 'linux' or sys_platform == 'darwin'
+uvloop~=0.21.0; sys_platform == 'linux' or sys_platform == 'darwin'
