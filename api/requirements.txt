@@ -1,6 +1,6 @@
 pydantic~=2.9.2
 aiogram~=3.13.1
-fastapi~=0.115.2
+fastapi~=0.115.4
 starlette~=0.39.2
 motor~=3.6.0
 uvicorn~=0.31.1
