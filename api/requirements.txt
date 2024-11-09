@@ -1,9 +1,9 @@
 pydantic~=2.9.2
-aiogram~=3.13.1
+aiogram~=3.14.0
 fastapi~=0.115.4
-starlette~=0.39.2
+starlette~=0.41.2
 motor~=3.6.0
-uvicorn~=0.31.1
+uvicorn~=0.32.0
 beanie~=1.27.0
 aiohttp[speedups]~=3.10.10
-uvloop~=0.20.0; sys_platform == 'linux' or sys_platform == 'darwin'
+uvloop~=0.21.0; sys_platform == 'linux' or sys_platform == 'darwin'
