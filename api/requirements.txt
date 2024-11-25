@@ -3,7 +3,7 @@ aiogram~=3.14.0
 fastapi~=0.115.4
 starlette~=0.41.2
 motor~=3.6.0
-uvicorn~=0.32.0
+uvicorn~=0.32.1
 beanie~=1.27.0
 aiohttp[speedups]~=3.10.10
 uvloop~=0.21.0; sys_platform == 'linux' or sys_platform == 'darwin'
