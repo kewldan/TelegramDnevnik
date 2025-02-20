@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 import aiohttp
@@ -37,7 +38,7 @@ class DnevnikClient:
                     self._account.token_update = datetime.now()
                     await self._account.save()
                 response = await resp.json(content_type=None)
-                print(uri, response)
+                logging.error(f'{uri} {response}')
                 if 'data' in response:
                     return response['data']
                 else:
