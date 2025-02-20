@@ -1,16 +1,35 @@
 'use client';
 
-import {SDKProvider} from "@telegram-apps/sdk-react";
-import React, {ReactNode} from "react";
-import store from "@/store";
-import {Provider} from "react-redux";
+import {backButton, init, initData, miniApp, swipeBehavior, themeParams, viewport} from "@telegram-apps/sdk-react";
+import {ReactNode} from "react";
+import Loader from "@/components/loader";
+import {useClientOnce} from "@/hooks/useClientOnce";
+import {useDidMount} from "@/hooks/useDidMount";
 
-export default function Providers({children, debug}: { children: ReactNode; debug: boolean }) {
-    return (
-        <Provider store={store}>
-            <SDKProvider acceptCustomStyles debug={debug}>
-                {children}
-            </SDKProvider>
-        </Provider>
-    )
+export default function Providers({children}: { children: ReactNode; }) {
+    const loaded = useDidMount();
+
+    useClientOnce(() => {
+        init();
+        (async () => {
+            if (backButton.isSupported())
+                backButton.mount();
+
+            if (swipeBehavior.isSupported())
+                swipeBehavior.mount();
+
+            await miniApp.mount();
+            await themeParams.mount();
+            initData.restore();
+            await viewport.mount();
+            viewport.bindCssVars();
+        })();
+    });
+
+    if (!loaded)
+        return (
+            <Loader/>
+        )
+
+    return children;
 }

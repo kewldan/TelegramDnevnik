@@ -2,46 +2,47 @@ from datetime import datetime
 
 import aiohttp
 
+from database import Account
 from .utils import serialize_datetime, serialize_date
 
 
 class DnevnikClient:
-    def __init__(self, token: str | None = None, endpoint: str = 'https://dnevnik2.petersburgedu.ru'):
+    def __init__(self, account: Account | None = None, endpoint: str = 'https://dnevnik2.petersburgedu.ru'):
         self._endpoint = endpoint
-        self._token = token
+        self._account = account
 
     async def _send_request(self, method: str, uri: str, **kwargs) -> dict[str, ...]:
         url = self._endpoint + uri
 
         cookies = {}
 
-        if self._token:
-            cookies['X-JWT-Token'] = self._token
+        if self._account:
+            cookies['X-JWT-Token'] = self._account.token
 
-        if 'cookies' in kwargs:
-            cookies.update(kwargs['cookies'])
-            del kwargs['cookies']
+        cookies.update(kwargs.pop('cookies', {}))
 
         headers = {
             "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36",
             "accept": "application/json",
-            "accept-charset": "UTF-8",
-            'x-jwt-token': self._token
+            "accept-charset": "UTF-8"
         }
 
-        if 'headers' in kwargs:
-            headers.update(kwargs['headers'])
-            del kwargs['headers']
+        headers.update(kwargs.pop('headers', {}))
 
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.request(method, url, headers=headers, **kwargs) as resp:
+                response_cookie = resp.cookies.get('X-JWT-Token')
+                if response_cookie:
+                    self._account.token = response_cookie.value
+                    self._account.token_update = datetime.now()
+                    await self._account.save()
                 response = await resp.json(content_type=None)
                 if 'data' in response:
                     return response['data']
                 else:
                     return response
 
-    async def auth(self, email: str, password: str, **kwargs) -> None:
+    async def auth(self, email: str, password: str, **kwargs) -> str:
         data = await self._send_request('POST', '/api/user/auth/login', json={
             "type": "email",
             "login": email,
@@ -49,7 +50,7 @@ class DnevnikClient:
             "password": password,
             "_isEmpty": False
         }, **kwargs)
-        self._token = data['token']
+        return data['token']
 
     async def get_children(self, **kwargs):
         data = await self._send_request('GET', '/api/journal/person/related-child-list', params={

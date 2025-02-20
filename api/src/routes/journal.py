@@ -2,12 +2,13 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, HTTPException
 from fastapi.params import Depends
+from starlette import status
 
 from database.account import Account
 from lib.dnevnik_api import DnevnikClient
-from routes.responses import SuccessResponse, ErrorResponse
+from routes.responses import SuccessResponse
 
 journal_router = APIRouter(prefix='/journal')
 
@@ -19,10 +20,10 @@ async def get_token(email: str, password: str):
     if not account:
         client = DnevnikClient()
         try:
-            await client.auth(email, password)
+            token = await client.auth(email, password)
         except:
-            return ErrorResponse('Не удалось войти в аккаунт', 401)
-        account = Account(uid=str(uuid.uuid4()), token=client._token, email=email, password=password)
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, 'Не удалось войти в аккаунт')
+        account = Account(uid=str(uuid.uuid4()), token=token, email=email, password=password)
         await account.insert()
 
     return SuccessResponse({'token': account.uid})
@@ -31,9 +32,16 @@ async def get_token(email: str, password: str):
 async def get_account_from_uid(uid: Annotated[str, Header(alias='X-Api-Token', regex=r'^[\w-]+$')]):
     account = await Account.find_one({'uid': uid})
     if not account:
-        return ErrorResponse('Аккаунт не найден', 404)
+        raise HTTPException(status.HTTP_404_NOT_FOUND, 'Аккаунт не найден')
 
-    return DnevnikClient(account.token)
+    if datetime.now() - account.token_update >= timedelta(days=1):
+        client = DnevnikClient()
+        token = await client.auth(account.email, account.password)
+        account.token = token
+        account.token_update = datetime.now()
+        await account.save()
+
+    return DnevnikClient(account)
 
 
 AccessClient = Annotated[DnevnikClient, Depends(get_account_from_uid)]
@@ -76,7 +84,9 @@ async def get_children(client: AccessClient):
             'periods': periods
         })
 
-    return SuccessResponse(data)
+    return SuccessResponse(data, headers={
+        'Cache-Control': 'max-age=3600',
+    })
 
 
 @journal_router.get('/children/{education_id}/subjects')
@@ -111,7 +121,10 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
 
         subject['marks'].sort(key=lambda mark: mark['date'])
 
-    return SuccessResponse(sorted([{**subjects[k], 'id': k} for k in subjects.keys()], key=lambda x: x['name']))
+    return SuccessResponse(sorted([{**subjects[k], 'id': k} for k in subjects.keys()], key=lambda x: x['name']),
+                           headers={
+                               'Cache-Control': 'max-age=3600',
+                           })
 
 
 @journal_router.get('/children/{education_id}/schedule')
@@ -121,9 +134,10 @@ async def get_schedule(client: AccessClient, education_id: int):
     last_sunday = last_monday + timedelta(days=6)
 
     data = await client.get_schedule(education_id, last_monday, last_sunday)
-    print(data)
 
-    return SuccessResponse(data)
+    return SuccessResponse(data, headers={
+        'Cache-Control': 'max-age=86400',
+    })
 
 
 @journal_router.get('/children/{education_id}/acs')
@@ -138,7 +152,9 @@ async def get_acs(client: AccessClient, education_id: int):
             'date': item['datetime']
         })
 
-    return SuccessResponse(items)
+    return SuccessResponse(items, headers={
+        'Cache-Control': 'max-age=86400',
+    })
 
 
 @journal_router.get('/{children}/{education_id}/teachers')
@@ -155,12 +171,19 @@ async def get_teachers(client: AccessClient, education_id: int):
             'subjects': item['subjects'],
         })
 
-    return SuccessResponse(teachers)
+    return SuccessResponse(teachers, headers={
+        'Cache-Control': 'max-age=86400',
+    })
 
 
 @journal_router.get('/children/{hash_uid}/finance')
 async def get_finance(client: AccessClient, hash_uid: str):
-    data = await client.get_accounts(hash_uid)
+    try:
+        data = await client.get_accounts(hash_uid)
+    except Exception:
+        return SuccessResponse([], headers={
+            'Cache-Control': 'max-age=1800',
+        })
 
     items = []
 
@@ -172,4 +195,6 @@ async def get_finance(client: AccessClient, hash_uid: str):
             'customer': account['customer_name'],
         })
 
-    return SuccessResponse(items)
+    return SuccessResponse(items, headers={
+        'Cache-Control': 'max-age=3600',
+    })

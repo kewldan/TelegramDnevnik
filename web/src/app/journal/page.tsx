@@ -1,47 +1,46 @@
 'use client';
 
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "@/store";
 import React, {useEffect, useState} from "react";
 import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {Child, getSubjects, Subject} from "@/lib/api";
+import {getSubjects, Subject} from "@/lib/api";
 import SubjectCard from "@/components/subject";
-import {setSelectedPeriod} from "@/features/periodSlice";
+import {useLoginStore} from "@/features/auth";
+import {usePeriodStore} from "@/features/period";
+import {useChildStore} from "@/features/child";
 
 export default function Home() {
-    const token = useSelector((root: RootState) => root.auth.token);
-    const period = useSelector((root: RootState) => root.period.period);
-    const selected = useSelector((root: RootState) => root.child.selected) as Child | null;
+    const authStore = useLoginStore();
+    const periodStore = usePeriodStore();
+    const childStore = useChildStore();
     const [subjects, setSubjects] = useState<Subject[]>([]);
-    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!selected || !token || !period)
+        if (!authStore.token || !periodStore.period || !childStore.child)
             return;
 
-        getSubjects(token, selected.education_id, period.from, period.to).then(setSubjects);
-    }, [period, selected, token]);
+        getSubjects(authStore.token, childStore.child.education_id, periodStore.period.from, periodStore.period.to).then(setSubjects);
+    }, [authStore.token, childStore.child, periodStore.period]);
 
     useEffect(() => {
-        if (!selected || period !== null)
+        if (periodStore.period || !childStore.child)
             return;
 
-        dispatch(setSelectedPeriod(selected.periods[0]));
-    }, [dispatch, period, selected])
+        periodStore.setPeriod(childStore.child.periods[0])
+    }, [childStore.child, periodStore])
 
     return (
         <main className="px-2 min-h-visual">
             {
-                selected && period && (
+                childStore.child && periodStore.period && (
                     <Tabs onValueChange={v => {
-                        const period = selected.periods.find(item => item.id.toString() === v);
+                        const period = childStore.child?.periods.find(item => item.id.toString() === v);
 
                         if (period)
-                            dispatch(setSelectedPeriod(period));
-                    }} value={period.id.toString()} className="w-full">
+                            periodStore.setPeriod(period)
+                    }} value={periodStore.period.id.toString()} className="w-full">
                         <TabsList className="w-full">
                             {
-                                selected?.periods.map(item => (
+                                childStore.child?.periods.map(item => (
                                     <TabsTrigger value={item.id.toString()} key={item.id}>{item.name}</TabsTrigger>
                                 ))
                             }

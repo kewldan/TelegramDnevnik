@@ -5,21 +5,17 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
-import {useCloudStorage} from "@telegram-apps/sdk-react";
 import {toast} from "sonner";
 import {getToken} from "@/lib/api";
 import {useRouter} from "next/navigation";
-import {useDispatch} from "react-redux";
-import {setToken} from "@/features/authSlice";
+import {useLoginStore} from "@/features/auth";
 
 export default function LoginForm() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
-    const cloud = useCloudStorage(true);
+    const authStore = useLoginStore();
 
     const router = useRouter();
-    const dispatch = useDispatch();
 
     return (
         <div className="flex flex-col gap-1 items-center w-full max-w-sm">
@@ -34,16 +30,10 @@ export default function LoginForm() {
                        onChange={e => setPassword(e.target.value)}/>
             </div>
             <Button className="w-full" type="submit" onClick={() => {
-                if (!cloud)
-                    return;
-
                 toast.promise(async () => {
                     const token = await getToken(email, password);
 
-                    await cloud.set('token', token);
-
-                    dispatch(setToken(token));
-
+                    authStore.login(token);
                     router.push('/journal');
                 }, {
                     success: 'Аккаунт добавлен',

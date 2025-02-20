@@ -2,24 +2,24 @@
 
 import {Button} from "@/components/ui/button";
 import React from "react";
-import {useCloudStorage, useMiniApp} from "@telegram-apps/sdk-react";
+import {cloudStorage, miniApp} from "@telegram-apps/sdk-react";
+import Animation from "@/components/animation";
+import SettingsAnimation from '#/animations/_DUCK13_LIKE_OUT.json';
 
 export default function SettingsPage() {
-    const cloudStorage = useCloudStorage(true);
-    const app = useMiniApp(true);
-
     return (
-        <main className="px-2 min-h-visual flex flex-col justify-end">
+        <main className="px-2 min-h-visual flex flex-col">
+            <div className="flex justify-center items-center h-full grow">
+                <Animation animationData={SettingsAnimation} className="w-64 h-64"/>
+            </div>
             <div>
                 <Button variant="destructive" size="lg" className="w-full" onClick={() => {
                     localStorage.clear();
 
-                    if (cloudStorage) {
-                        cloudStorage.delete('token').then();
+                    if (cloudStorage.clear.isAvailable()) {
+                        cloudStorage.clear();
                     }
-                    if (app) {
-                        app.close();
-                    }
+                    miniApp.close();
                 }}>
                     Выйти из аккаунта
                 </Button>

@@ -6,6 +6,7 @@ import Providers from "@/lib/providers";
 import {ThemeProvider} from "@/components/ui/theme-provider";
 import ThemeDaemon from "@/components/theme-daemon";
 import {Toaster} from "@/components/ui/sonner";
+import {cn} from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Электронный дневник",
@@ -24,9 +25,9 @@ export default async function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
         <body
-            className={`${font.className} antialiased`}
+            className={cn(font.className, 'antialiased overflow-x-clip')}
         >
-        <Providers debug={process.env.NODE_ENV !== "production"}>
+        <Providers>
             <ThemeProvider
                 attribute="class"
                 defaultTheme="system"

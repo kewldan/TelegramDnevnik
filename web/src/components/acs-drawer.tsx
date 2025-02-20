@@ -12,33 +12,25 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer";
 import {Button} from "@/components/ui/button";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
 import {ACSItem, getACS} from "@/lib/api";
 import {Shield} from "lucide-react";
 import {ScrollArea} from "@/components/ui/scroll-area";
-import {useHapticFeedback} from "@telegram-apps/sdk-react";
+import {useLoginStore} from "@/features/auth";
+import {useChildStore} from "@/features/child";
 
 export default function ACSDrawer() {
-    const token = useSelector((root: RootState) => root.auth.token);
-    const child = useSelector((root: RootState) => root.child.selected);
-    const hapticFeedback = useHapticFeedback(true);
+    const authStore = useLoginStore();
+    const childStore = useChildStore();
 
     const [items, setItems] = useState<ACSItem[]>([]);
 
     useEffect(() => {
-        if (!child || !token)
+        if (!authStore.token || !childStore.child)
             return;
 
-        getACS(token, child.education_id).then(setItems);
-    }, [child, token]);
-
-    useEffect(() => {
-        if (!hapticFeedback)
-            return;
-
-        hapticFeedback.impactOccurred('medium');
-    }, [hapticFeedback]);
+        getACS(authStore.token, childStore.child.education_id).then(setItems).catch(() => {
+        });
+    }, [authStore.token, childStore.child]);
 
     return (
         <Drawer snapPoints={[1]} fadeFromIndex={0}>
@@ -50,7 +42,7 @@ export default function ACSDrawer() {
             <DrawerContent>
                 <DrawerHeader>
                     <DrawerTitle>Учет посещаемости</DrawerTitle>
-                    <DrawerDescription>{child?.surname} {child?.first_name}</DrawerDescription>
+                    <DrawerDescription>{childStore.child?.surname} {childStore.child?.first_name}</DrawerDescription>
                 </DrawerHeader>
                 <ScrollArea className="max-h-72">
                     <div className="p-2 flex flex-col gap-1">

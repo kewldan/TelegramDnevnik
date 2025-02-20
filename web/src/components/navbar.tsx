@@ -16,7 +16,8 @@ export default function Navbar() {
     const pathname = usePathname();
 
     return (
-        <nav className="sticky bottom-0 w-full p-1 pt-2 flex justify-around bg-background border-t border-border mt-3">
+        <nav
+            className="sticky bottom-0 w-screen p-1 pt-2 flex justify-around bg-background border-t border-border mt-3">
             {pages.map(item => (
                 <Link key={item.href} href={item.href}
                       className={cn('flex flex-col items-center justify-center text-sm text-muted-foreground w-full', pathname === item.href && 'text-primary')}>

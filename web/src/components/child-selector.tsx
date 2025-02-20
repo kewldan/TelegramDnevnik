@@ -1,37 +1,34 @@
 'use client';
 
 import React, {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "@/store";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Child, getChildren} from "@/lib/api";
-import {setSelectedChild} from "@/features/childSlice";
 import {ChevronDown} from "lucide-react";
-import {useHapticFeedback} from "@telegram-apps/sdk-react";
 import {useRouter} from "next/navigation";
+import {useLoginStore} from "@/features/auth";
+import {useChildStore} from "@/features/child";
+import {hapticFeedback} from "@telegram-apps/sdk-react";
 
 export default function ChildSelector() {
-    const hapticFeedback = useHapticFeedback(true);
-    const dispatch = useDispatch();
     const router = useRouter();
-
-    const selected = useSelector((state: RootState) => state.child.selected);
-    const token = useSelector((state: RootState) => state.auth.token);
+    const auth = useLoginStore();
+    const child = useChildStore();
     const [children, setChildren] = useState<Child[]>([]);
 
     useEffect(() => {
-        if (!token) {
+        if (!child.child && children.length > 0) {
+            child.setChild(children[0]);
+        }
+    }, [child, children]);
+
+    useEffect(() => {
+        if (!auth.token) {
             router.replace('/');
             return;
         }
 
-        getChildren(token).then(children => {
-            setChildren(children);
-
-            if (!selected && children.length > 0)
-                dispatch(setSelectedChild(children[0]));
-        });
-    }, [dispatch, selected, token]);
+        getChildren(auth.token).then(setChildren);
+    }, [auth.token, router]);
 
     return (
         <div>
@@ -39,9 +36,9 @@ export default function ChildSelector() {
                 <DropdownMenuTrigger>
                     <div className="flex gap-1 items-center">
                         {
-                            selected ? (
+                            child.child ? (
                                 (
-                                    <span>{selected.surname} {selected.first_name[0]}.</span>
+                                    <span>{child.child.surname} {child.child.first_name[0]}.</span>
                                 )
                             ) : (
                                 <span>нет детей</span>
@@ -54,9 +51,8 @@ export default function ChildSelector() {
                     {
                         children.map(item => (
                             <DropdownMenuItem key={item.uid} onClick={() => {
-                                if (hapticFeedback)
-                                    hapticFeedback.impactOccurred('heavy');
-                                dispatch(setSelectedChild(item));
+                                hapticFeedback.impactOccurred('heavy');
+                                child.setChild(item)
                             }}>{item.surname} {item.first_name} [{item.group_name}]</DropdownMenuItem>
                         ))
                     }

@@ -2,19 +2,19 @@
 
 import {getSchedule} from "@/lib/api";
 import {useEffect} from "react";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
+import {useLoginStore} from "@/features/auth";
+import {useChildStore} from "@/features/child";
 
 export default function JobPage() {
-    const token = useSelector((root: RootState) => root.auth.token);
-    const child = useSelector((root: RootState) => root.child.selected);
+    const authStore = useLoginStore();
+    const childStore = useChildStore();
 
     useEffect(() => {
-        if (!child || !token)
+        if (!childStore.child || !authStore.token)
             return;
 
-        getSchedule(token, child.education_id).then(console.log);
-    }, [child, token]);
+        getSchedule(authStore.token, childStore.child.education_id).then(console.log);
+    }, [authStore.token, childStore.child]);
 
     return (
         <main className="p-2 min-h-visual">

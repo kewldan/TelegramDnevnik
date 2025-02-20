@@ -7,11 +7,9 @@ import PrivacyAnimation from '#/animations/_005_PRIVATE_OUT.json';
 import LoginAnimation from '#/animations/_DUCK23_HEARTS_OUT.json';
 import React, {ReactNode, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
-import SpbLogo from "@/components/spb-logo";
 import LoginForm from "@/components/login-form";
 import {useRouter} from "next/navigation";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
+import {useLoginStore} from "@/features/auth";
 
 type Slide = {
     animation: Record<string, unknown>;
@@ -28,9 +26,7 @@ const slides: Slide[] = [
             <>
                 <p>Это <span className="font-bold text-green-500">новый клиент</span> для ЭД Санкт-Петербурга. Созданный
                     в качестве
-                    альтернативы официальному приложению от
-                    шедевро-гос-ва</p>
-                <SpbLogo/>
+                    альтернативы официальному приложению</p>
             </>
 
         ),
@@ -80,26 +76,30 @@ export default function GreetingPage() {
     const [slide, setSlide] = useState<number>(0);
     const router = useRouter();
 
-    const token = useSelector((state: RootState) => state.auth.token);
+    const auth = useLoginStore();
 
     useEffect(() => {
-        if (token) {
+        if (auth.token) {
             router.replace('/journal');
         }
-    }, [router, token]);
+    }, [router, auth.token]);
 
     const currentSlide = slides[slide % slides.length];
 
     return (
         <main className="min-h-screen flex flex-col items-center justify-between gap-4 p-4">
-            <Animation animationData={currentSlide.animation} className="w-64"/>
+            <Animation animationData={currentSlide.animation} className="w-64 h-64"/>
             <div className="flex gap-4 flex-col">
                 <h1 className="text-4xl font-bold">{currentSlide.title}</h1>
                 <span>
                     {currentSlide.description}
                 </span>
             </div>
-            <LoginForm/>
+            {
+                slide === 3 && (
+                    <LoginForm/>
+                )
+            }
             {(slide + 1) !== slides.length && (
                 <Button size="lg" className="w-full" onClick={() => {
                     setSlide(v => v + 1);

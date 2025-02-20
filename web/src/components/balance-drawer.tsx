@@ -1,7 +1,5 @@
 'use client';
 
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
 import React, {useEffect, useState} from "react";
 import {FinanceItem, getFinance} from "@/lib/api";
 import {
@@ -17,28 +15,22 @@ import {
 import {Button} from "@/components/ui/button";
 import {Wallet} from "lucide-react";
 import {formatCurrency} from "@/lib/utils";
-import {useHapticFeedback} from "@telegram-apps/sdk-react";
+import {useLoginStore} from "@/features/auth";
+import {useChildStore} from "@/features/child";
 
 export default function BalanceDrawer() {
-    const token = useSelector((root: RootState) => root.auth.token);
-    const child = useSelector((root: RootState) => root.child.selected);
-    const hapticFeedback = useHapticFeedback(true);
+    const authStore = useLoginStore();
+    const childStore = useChildStore();
 
     const [items, setItems] = useState<FinanceItem[]>([]);
 
     useEffect(() => {
-        if (!child || !token)
+        if (!authStore.token || !childStore.child)
             return;
 
-        getFinance(token, child.uid).then(setItems);
-    }, [child, token]);
-
-    useEffect(() => {
-        if (!hapticFeedback)
-            return;
-
-        hapticFeedback.impactOccurred('medium');
-    }, [hapticFeedback]);
+        getFinance(authStore.token, childStore.child.uid).then(setItems).catch(() => {
+        });
+    }, [authStore.token, childStore.child]);
 
     return (
         <Drawer snapPoints={[1]} fadeFromIndex={0}>

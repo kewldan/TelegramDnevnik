@@ -1,21 +1,21 @@
 'use client';
 
-import {Child, getTeachers, Teacher} from "@/lib/api";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
+import {getTeachers, Teacher} from "@/lib/api";
 import {useEffect, useState} from "react";
+import {useLoginStore} from "@/features/auth";
+import {useChildStore} from "@/features/child";
 
 export default function JobPage() {
-    const token = useSelector((root: RootState) => root.auth.token);
-    const selected = useSelector((root: RootState) => root.child.selected) as Child | null;
+    const authStore = useLoginStore();
+    const childStore = useChildStore();
     const [teachers, setTeachers] = useState<Teacher[]>([]);
 
     useEffect(() => {
-        if (!selected || !token)
+        if (!authStore.token || !childStore.child)
             return;
 
-        getTeachers(token, selected.education_id).then(setTeachers);
-    }, [selected, token]);
+        getTeachers(authStore.token, childStore.child.education_id).then(setTeachers);
+    }, [authStore.token, childStore.child]);
 
     return (
         <main className="min-h-visual px-2">

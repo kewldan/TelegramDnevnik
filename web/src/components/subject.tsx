@@ -15,10 +15,9 @@ import {Subject} from "@/lib/api";
 import Mark from "@/components/mark";
 import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Button} from "@/components/ui/button";
+import {usePeriodStore} from "@/features/period";
 
 const weights: Record<string, number> = {
     "Работа на уроке": 1,
@@ -52,7 +51,7 @@ const weights: Record<string, number> = {
 
 export default function SubjectCard({subject}: { subject: Subject }) {
     const avg = subject.marks.reduce((sum, mark) => sum + (isNaN(Number.parseInt(mark.value)) ? 0 : Number.parseInt(mark.value)) * (weights[mark.why] || 1), 0) / subject.marks.reduce((sum, mark) => sum + (isNaN(Number.parseInt(mark.value)) ? 0 : (weights[mark.why] || 1)), 0);
-    const period = useSelector((root: RootState) => root.period.period);
+    const periodStore = usePeriodStore();
     const displayedMarks = subject.marks.filter(mark => ['1', '2', '3', '4', '5'].includes(mark.value));
 
     return (
@@ -87,7 +86,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
             <DrawerContent className="min-h-screen">
                 <DrawerHeader>
                     <DrawerTitle>{subject.name}</DrawerTitle>
-                    <DrawerDescription>за {period?.name}</DrawerDescription>
+                    <DrawerDescription>за {periodStore.period?.name}</DrawerDescription>
                 </DrawerHeader>
                 <ScrollArea className="max-h-72">
                     <pre className="p-2 font-sans">
