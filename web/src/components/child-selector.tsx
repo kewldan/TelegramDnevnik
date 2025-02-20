@@ -8,56 +8,61 @@ import {useRouter} from "next/navigation";
 import {useLoginStore} from "@/features/auth";
 import {useChildStore} from "@/features/child";
 import {hapticFeedback} from "@telegram-apps/sdk-react";
+import {usePeriodStore} from "@/features/period";
 
 export default function ChildSelector() {
     const router = useRouter();
-    const auth = useLoginStore();
-    const child = useChildStore();
+    const authStore = useLoginStore();
+    const childStore = useChildStore();
+    const periodStore = usePeriodStore();
     const [children, setChildren] = useState<Child[]>([]);
 
     useEffect(() => {
-        if (!child.child && children.length > 0) {
-            child.setChild(children[0]);
+        if (!childStore.child && children.length > 0) {
+            childStore.setChild(children[0]);
         }
-    }, [child, children]);
+    }, [childStore, children]);
 
     useEffect(() => {
-        if (!auth.token) {
+        if (!authStore.token) {
             router.replace('/');
             return;
         }
 
-        getChildren(auth.token).then(setChildren);
-    }, [auth.token, router]);
+        getChildren(authStore.token).then(setChildren);
+    }, [authStore.token, router]);
 
     return (
         <div>
-            <DropdownMenu>
-                <DropdownMenuTrigger>
-                    <div className="flex gap-1 items-center">
-                        {
-                            child.child ? (
-                                (
-                                    <span>{child.child.surname} {child.child.first_name[0]}.</span>
-                                )
-                            ) : (
-                                <span>нет детей</span>
-                            )
-                        }
-                        <ChevronDown/>
-                    </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    {
-                        children.map(item => (
-                            <DropdownMenuItem key={item.uid} onClick={() => {
-                                hapticFeedback.impactOccurred('heavy');
-                                child.setChild(item)
-                            }}>{item.surname} {item.first_name} [{item.group_name}]</DropdownMenuItem>
-                        ))
-                    }
-                </DropdownMenuContent>
-            </DropdownMenu>
+            {
+                children.length > 0 ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <div className="flex gap-1 items-center">
+                                {
+                                    childStore.child && (
+                                        <span>{childStore.child.surname} {childStore.child.first_name[0]}.</span>
+                                    )
+                                }
+                                <ChevronDown/>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            {
+                                children.map(item => (
+                                    <DropdownMenuItem key={item.uid} onClick={() => {
+                                        hapticFeedback.impactOccurred('heavy');
+                                        childStore.setChild(item)
+                                        periodStore.setPeriod(item.periods[0]);
+                                    }}>{item.surname} {item.first_name} [{item.group_name}]</DropdownMenuItem>
+                                ))
+                            }
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <p>Нет детей</p>
+                )
+            }
         </div>
     )
 }

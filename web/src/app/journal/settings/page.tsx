@@ -2,7 +2,7 @@
 
 import {Button} from "@/components/ui/button";
 import React from "react";
-import {cloudStorage, miniApp} from "@telegram-apps/sdk-react";
+import {miniApp} from "@telegram-apps/sdk-react";
 import Animation from "@/components/animation";
 import SettingsAnimation from '#/animations/_DUCK13_LIKE_OUT.json';
 
@@ -15,10 +15,6 @@ export default function SettingsPage() {
             <div>
                 <Button variant="destructive" size="lg" className="w-full" onClick={() => {
                     localStorage.clear();
-
-                    if (cloudStorage.clear.isAvailable()) {
-                        cloudStorage.clear();
-                    }
                     miniApp.close();
                 }}>
                     Выйти из аккаунта
