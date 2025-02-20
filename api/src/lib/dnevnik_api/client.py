@@ -37,6 +37,7 @@ class DnevnikClient:
                     self._account.token_update = datetime.now()
                     await self._account.save()
                 response = await resp.json(content_type=None)
+                print(uri, response)
                 if 'data' in response:
                     return response['data']
                 else:
