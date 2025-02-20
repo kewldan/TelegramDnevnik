@@ -37,6 +37,8 @@ class DnevnikClient:
                     self._account.token = response_cookie.value
                     self._account.token_update = datetime.now()
                     await self._account.save()
+                logging.error(f'text: "{await resp.text()}"')
+                logging.error(resp.status)
                 response = await resp.json(content_type=None)
                 logging.error(f'{uri} {response}')
                 if 'data' in response:
