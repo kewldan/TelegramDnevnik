@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime, timedelta
 from typing import Annotated
@@ -21,7 +22,8 @@ async def get_token(email: str, password: str):
         client = DnevnikClient()
         try:
             token = await client.auth(email, password)
-        except:
+        except Exception as e:
+            logging.exception(e)
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, 'Не удалось войти в аккаунт')
         account = Account(uid=str(uuid.uuid4()), token=token, email=email, password=password)
         await account.insert()
