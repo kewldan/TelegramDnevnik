@@ -33,7 +33,7 @@ class DnevnikClient:
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.request(method, url, headers=headers, **kwargs) as resp:
                 response_cookie = resp.cookies.get('X-JWT-Token')
-                if response_cookie:
+                if response_cookie and self._account is not None:
                     self._account.token = response_cookie.value
                     self._account.token_update = datetime.now()
                     await self._account.save()
