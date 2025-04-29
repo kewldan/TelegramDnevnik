@@ -18,8 +18,8 @@ export default function Providers({children}: { children: ReactNode; }) {
             if (swipeBehavior.isSupported())
                 swipeBehavior.mount();
 
-            await miniApp.mount();
-            await themeParams.mount();
+            miniApp.mountSync();
+            themeParams.mountSync();
             initData.restore();
             await viewport.mount();
             viewport.bindCssVars();
