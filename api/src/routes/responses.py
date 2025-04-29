@@ -13,8 +13,3 @@ class BaseResponse(JSONResponse):
 class SuccessResponse(BaseResponse):
     def __init__(self, content: dict | list, status_code: int = 200, **kwargs) -> None:
         super().__init__('success', {'data': content}, status_code, **kwargs)
-
-
-class ErrorResponse(BaseResponse):
-    def __init__(self, message: str, status_code: int = 500, **kwargs) -> None:
-        super().__init__('error', {'message': message}, status_code, **kwargs)

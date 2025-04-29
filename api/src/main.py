@@ -1,6 +1,7 @@
 import sys
 from contextlib import suppress
 
+import sentry_sdk
 import uvicorn
 
 from config import config
@@ -16,6 +17,11 @@ async def main():
 
 
 if __name__ == '__main__':
+    sentry_sdk.init(
+        dsn="https://55da7c4caea037aac119e2b727bd97d8@o954513.ingest.us.sentry.io/4509237787557888",
+        send_default_pii=True,
+    )
+
     with suppress(KeyboardInterrupt):
         if sys.platform in ['linux', 'darwin']:
             import uvloop
