@@ -121,7 +121,7 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
             'comment': item['estimate_comment']
         })
 
-        subject['marks'].sort(key=lambda mark: mark['date'])
+        subject['marks'].sort(key=lambda mark: datetime.strptime(mark["date"], "%d.%m.%Y"))
 
     return SuccessResponse(sorted([{**subjects[k], 'id': k} for k in subjects.keys()], key=lambda x: x['name']),
                            headers={

@@ -88,7 +88,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                     <DrawerTitle>{subject.name}</DrawerTitle>
                     <DrawerDescription>за {periodStore.period?.name}</DrawerDescription>
                 </DrawerHeader>
-                <ScrollArea className="h-72">
+                <ScrollArea className="h-96">
                     <pre className="p-2 font-sans">
                         {
                             subject.marks.map(mark => (
