@@ -23,6 +23,8 @@ app.include_router(journal_router)
 async def handle_middleware(request: Request, call_next: Callable) -> Response:
     try:
         return await call_next(request)
+    except HTTPException as e:
+        raise e
     except DnevnikAPIException as e:
         sentry_sdk.capture_exception(e)
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, f'ЭД: {e.message}')
