@@ -35,7 +35,7 @@ export async function sendRequest(uri: string, init?: RequestInit, params?: Reco
             }
         }
     } else {
-        response = await fetch(`/api/${uri}${urlParams}`, init);
+        response = await fetch(`/api${uri}${urlParams}`, init);
     }
 
     let data;
@@ -54,9 +54,6 @@ export async function sendRequest(uri: string, init?: RequestInit, params?: Reco
     if (data.type === 'success') {
         return data['data'];
     } else {
-        if (typeof window !== 'undefined') {
-            console.error(data);
-        }
-        throw new APIError(data.message, response.status);
+        throw new APIError(data.detail || data.message, response.status);
     }
 }

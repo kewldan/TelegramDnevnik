@@ -74,14 +74,6 @@ export async function getSubjects(token: string, educationId: number, dateFrom: 
     })
 }
 
-export async function getSchedule(token: string, educationId: number): Promise<unknown> {
-    return await sendRequest(`/journal/children/${educationId}/schedule`, {
-        headers: {
-            'X-Api-Token': token
-        }
-    })
-}
-
 export type Teacher = {
     id: number;
     name: string;

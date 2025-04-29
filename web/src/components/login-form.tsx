@@ -37,7 +37,7 @@ export default function LoginForm() {
                     router.push('/journal');
                 }, {
                     success: 'Аккаунт добавлен',
-                    error: err => `Ошибка. ${err}`
+                    error: err => `Ошибка. ${err.message}`
                 })
             }}>
                 Войти
