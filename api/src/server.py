@@ -6,6 +6,7 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import Response
 
+from lib.dnevnik_api import DnevnikAPIException
 from routes import journal_router
 
 app = FastAPI(
@@ -22,6 +23,9 @@ app.include_router(journal_router)
 async def handle_middleware(request: Request, call_next: Callable) -> Response:
     try:
         return await call_next(request)
+    except DnevnikAPIException as e:
+        sentry_sdk.capture_exception(e)
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, f'ЭД: {e.message}')
     except Exception as e:
         sentry_sdk.capture_exception(e)
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, 'Что-то пошло не так')

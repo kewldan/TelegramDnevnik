@@ -87,7 +87,7 @@ async def get_children(client: AccessClient):
         })
 
     return SuccessResponse(data, headers={
-        'Cache-Control': 'max-age=86400',
+        'Cache-Control': 'max-age=604800',
     })
 
 
@@ -129,19 +129,6 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
                            })
 
 
-@journal_router.get('/children/{education_id}/schedule')
-async def get_schedule(client: AccessClient, education_id: int):
-    today = datetime.now()
-    last_monday = today - timedelta(days=today.weekday() * 100)
-    last_sunday = last_monday + timedelta(days=6)
-
-    data = await client.get_schedule(education_id, last_monday, last_sunday)
-
-    return SuccessResponse(data, headers={
-        'Cache-Control': 'max-age=86400',
-    })
-
-
 @journal_router.get('/children/{education_id}/acs')
 async def get_acs(client: AccessClient, education_id: int):
     data = await client.get_acs(education_id)
@@ -174,7 +161,7 @@ async def get_teachers(client: AccessClient, education_id: int):
         })
 
     return SuccessResponse(teachers, headers={
-        'Cache-Control': 'max-age=86400',
+        'Cache-Control': 'max-age=604800',
     })
 
 

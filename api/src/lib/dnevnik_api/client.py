@@ -1,6 +1,6 @@
 import json
-import logging
 from datetime import datetime
+from json import JSONDecodeError
 
 import aiohttp
 
@@ -39,15 +39,16 @@ class DnevnikClient:
                     self._account.token = response_cookie.value
                     self._account.token_update = datetime.now()
                     await self._account.save()
-                
+
                 text = await resp.text()
                 if text == '':
                     raise DnevnikAPIException('Пустой ответ')
 
-                logging.info(f'text: "{text}"')
-                logging.info(resp.status)
-                response = json.loads(text)
-                logging.info(f'{uri} {response}')
+                try:
+                    response = json.loads(text)
+                except JSONDecodeError:
+                    raise DnevnikAPIException('Не удалось подключиться')
+
                 if 'data' in response:
                     return response['data']
                 else:
