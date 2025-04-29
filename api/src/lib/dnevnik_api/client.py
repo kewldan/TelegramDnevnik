@@ -1,9 +1,11 @@
+import json
 import logging
 from datetime import datetime
 
 import aiohttp
 
 from database import Account
+from .exceptions import DnevnikAPIException
 from .utils import serialize_datetime, serialize_date
 
 
@@ -37,10 +39,15 @@ class DnevnikClient:
                     self._account.token = response_cookie.value
                     self._account.token_update = datetime.now()
                     await self._account.save()
-                logging.error(f'text: "{await resp.text()}"')
-                logging.error(resp.status)
-                response = await resp.json(content_type=None)
-                logging.error(f'{uri} {response}')
+                
+                text = await resp.text()
+                if text == '':
+                    raise DnevnikAPIException('Пустой ответ')
+
+                logging.info(f'text: "{text}"')
+                logging.info(resp.status)
+                response = json.loads(text)
+                logging.info(f'{uri} {response}')
                 if 'data' in response:
                     return response['data']
                 else:

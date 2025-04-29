@@ -1,8 +1,8 @@
-import logging
 import uuid
 from datetime import datetime, timedelta
 from typing import Annotated
 
+import sentry_sdk
 from fastapi import APIRouter, Header, HTTPException
 from fastapi.params import Depends
 from starlette import status
@@ -23,7 +23,7 @@ async def get_token(email: str, password: str):
         try:
             token = await client.auth(email, password)
         except Exception as e:
-            logging.exception(e)
+            sentry_sdk.capture_exception(e)
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, 'Не удалось войти в аккаунт')
         account = Account(uid=str(uuid.uuid4()), token=token, email=email, password=password)
         await account.insert()
@@ -87,7 +87,7 @@ async def get_children(client: AccessClient):
         })
 
     return SuccessResponse(data, headers={
-        'Cache-Control': 'max-age=3600',
+        'Cache-Control': 'max-age=86400',
     })
 
 
@@ -125,7 +125,7 @@ async def get_subjects(client: AccessClient, education_id: int, date_from: str, 
 
     return SuccessResponse(sorted([{**subjects[k], 'id': k} for k in subjects.keys()], key=lambda x: x['name']),
                            headers={
-                               'Cache-Control': 'max-age=3600',
+                               'Cache-Control': 'max-age=86400',
                            })
 
 
@@ -198,5 +198,5 @@ async def get_finance(client: AccessClient, hash_uid: str):
         })
 
     return SuccessResponse(items, headers={
-        'Cache-Control': 'max-age=3600',
+        'Cache-Control': 'max-age=86400',
     })
