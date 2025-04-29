@@ -57,10 +57,10 @@ export default function SubjectCard({subject}: { subject: Subject }) {
     return (
         <Drawer fadeFromIndex={0} snapPoints={[1]}>
             <DrawerTrigger
-                className={cn("border rounded-lg p-2 flex justify-between", subject.marks.length === 0 && "hidden")}>
+                className={cn("border rounded-lg p-2 flex justify-between items-center", subject.marks.length === 0 && "hidden")}>
                 <div className="flex flex-col items-start w-full pr-4">
                     <p className="text-lg font-medium text-left">{subject.name}</p>
-                    <div className="flex gap-0.5">
+                    <div className="flex gap-0.5 flex-wrap">
                         {
                             displayedMarks.length > 0 ? (
                                 displayedMarks.map(mark => (
@@ -73,7 +73,7 @@ export default function SubjectCard({subject}: { subject: Subject }) {
                         }
                     </div>
                 </div>
-                <Badge variant="secondary" className={cn(displayedMarks.length === 0 && "invisible")}>
+                <Badge variant="secondary" className={cn("h-fit py-4", displayedMarks.length === 0 && "invisible")}>
                     <span className={cn('text-purple-500',
                         avg >= 1.5 && 'text-red-500',
                         avg >= 2.5 && 'text-yellow-600',

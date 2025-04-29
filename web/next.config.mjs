@@ -2,6 +2,7 @@
 const nextConfig = {
     poweredByHeader: false,
     reactStrictMode: true,
+    devIndicators: false,
     async rewrites() {
         return {
             fallback: [

@@ -25,8 +25,12 @@ export default function ThemeDaemon() {
 
         if (theme == 'dark') {
             miniApp.setHeaderColor('#0a0a0a')
+            miniApp.setBottomBarColor('#0a0a0a');
+            miniApp.setBackgroundColor('#0a0a0a');
         } else if (theme == 'light') {
             miniApp.setHeaderColor('#ffffff')
+            miniApp.setBottomBarColor('#ffffff');
+            miniApp.setBackgroundColor('#ffffff');
         }
     }, [miniAppMounted, theme]);
 
