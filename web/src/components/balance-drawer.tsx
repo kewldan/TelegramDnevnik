@@ -28,8 +28,8 @@ export default function BalanceDrawer() {
         if (!authStore.token || !childStore.child)
             return;
 
-        getFinance(authStore.token, childStore.child.uid).then(setItems).catch(() => {
-        });
+        // getFinance(authStore.token, childStore.child.uid).then(setItems).catch(() => {
+        // });
     }, [authStore.token, childStore.child]);
 
     return (
